@@ -9,7 +9,6 @@ import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ValidateOnCreateItem;
 import ru.practicum.shareit.item.dto.ValidateOnUpdateItem;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.mapper.DtoMapper;
 
 import javax.validation.Valid;
@@ -34,7 +33,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     @Validated(ValidateOnUpdateItem.class)
-    public ItemDto update(@PathVariable("itemId") Long itemId ,
+    public ItemDto update(@PathVariable("itemId") Long itemId,
                           @RequestHeader("X-Sharer-User-Id") Long idOwner,
                           @Valid @RequestBody ItemDto itemDto)
             throws ItemNotFoundException, UserNotFoundException, ItemAccessException {
@@ -48,7 +47,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getItemsOwner( @RequestHeader("X-Sharer-User-Id") Long idOwner)
+    public List<ItemDto> getItemsOwner(@RequestHeader("X-Sharer-User-Id") Long idOwner)
             throws UserNotFoundException {
         return itemService.readAllItemsOwner(idOwner).stream().map(DtoMapper::toItemDto).collect(Collectors.toList());
     }

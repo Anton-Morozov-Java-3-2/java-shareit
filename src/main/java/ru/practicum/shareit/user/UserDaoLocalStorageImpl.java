@@ -15,7 +15,9 @@ public class UserDaoLocalStorageImpl implements UserStorage {
     private final Set<String> emails = new HashSet<>();
     private Long counterId = 0L;
 
-    private Long createId() {return ++counterId;}
+    private Long createId() {
+        return ++counterId;
+    }
 
     private boolean isUniqEmail(String email) {
         return !emails.contains(email);
@@ -67,14 +69,14 @@ public class UserDaoLocalStorageImpl implements UserStorage {
         checkUserExists(id);
         User dbUser = users.get(id);
         String email = user.getEmail();
-        if (email!= null) {
+        if (email != null) {
             checkUserEmail(email);
             emails.add(email);
             deleteEmail(dbUser.getEmail());
             dbUser.setEmail(user.getEmail());
         }
 
-        if (user.getName() !=null) {
+        if (user.getName() != null) {
             dbUser.setName(user.getName());
         }
         users.put(id, dbUser);

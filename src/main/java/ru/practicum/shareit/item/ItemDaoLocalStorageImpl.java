@@ -11,12 +11,14 @@ import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
-public class ItemDaoLocalStorageImpl implements ItemStorage{
+public class ItemDaoLocalStorageImpl implements ItemStorage {
 
     private final Map<Long, Item> items = new HashMap<>();
     private Long counterId = 0L;
 
-    private Long createId() {return ++counterId;}
+    private Long createId() {
+        return ++counterId;
+    }
 
     private boolean isItemExists(Long id) {
         return items.containsKey(id);
