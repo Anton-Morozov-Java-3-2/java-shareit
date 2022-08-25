@@ -25,36 +25,36 @@ public class ItemController {
 
     @PostMapping
     @Validated(ValidateOnCreateItem.class)
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long idOwner,
+    public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                           @Valid @RequestBody ItemDto itemDto)
             throws UserNotFoundException {
-        return DtoMapper.toItemDto(itemService.create(idOwner, DtoMapper.toItem(itemDto)));
+        return DtoMapper.toItemDto(itemService.create(ownerId, DtoMapper.toItem(itemDto)));
     }
 
     @PatchMapping("/{itemId}")
     @Validated(ValidateOnUpdateItem.class)
     public ItemDto update(@PathVariable("itemId") Long itemId,
-                          @RequestHeader("X-Sharer-User-Id") Long idOwner,
+                          @RequestHeader("X-Sharer-User-Id") Long ownerId,
                           @Valid @RequestBody ItemDto itemDto)
             throws ItemNotFoundException, UserNotFoundException, ItemAccessException {
-        return DtoMapper.toItemDto(itemService.update(idOwner, itemId,DtoMapper.toItem(itemDto)));
+        return DtoMapper.toItemDto(itemService.update(ownerId, itemId,DtoMapper.toItem(itemDto)));
     }
 
-    @GetMapping("/{idItem}")
-    public ItemDto get(@PathVariable("idItem") Long id, @RequestHeader("X-Sharer-User-Id") Long idUser)
+    @GetMapping("/{itemId}")
+    public ItemDto get(@PathVariable("itemId") Long id, @RequestHeader("X-Sharer-User-Id") Long ownerId)
             throws ItemNotFoundException {
-        return DtoMapper.toItemDto(itemService.read(id));
+        return DtoMapper.toItemDto(itemService.findItemById(id));
     }
 
     @GetMapping
-    public List<ItemDto> getItemsOwner(@RequestHeader("X-Sharer-User-Id") Long idOwner)
+    public List<ItemDto> getItemsOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId)
             throws UserNotFoundException {
-        return itemService.readAllItemsOwner(idOwner).stream().map(DtoMapper::toItemDto).collect(Collectors.toList());
+        return itemService.readAllItemsOwner(ownerId).stream().map(DtoMapper::toItemDto).collect(Collectors.toList());
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam("text") String text, @RequestHeader("X-Sharer-User-Id") Long idOwner)
+    public List<ItemDto> searchItems(@RequestParam("text") String text, @RequestHeader("X-Sharer-User-Id") Long ownerId)
             throws UserNotFoundException {
-        return itemService.searchItem(idOwner, text).stream().map(DtoMapper::toItemDto).collect(Collectors.toList());
+        return itemService.searchItem(ownerId, text).stream().map(DtoMapper::toItemDto).collect(Collectors.toList());
     }
 }

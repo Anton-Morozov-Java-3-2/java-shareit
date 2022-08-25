@@ -46,9 +46,9 @@ public class ItemDaoLocalStorageImpl implements ItemStorage {
     }
 
     @Override
-    public List<Item> readAllItemsOwner(Long idOwner) {
+    public List<Item> readAllItemsOwner(Long ownerId) {
         return items.values().stream()
-                .filter(item -> item.getOwner().getId().equals(idOwner))
+                .filter(item -> item.getOwner().getId().equals(ownerId))
                 .collect(Collectors.toList());
     }
 

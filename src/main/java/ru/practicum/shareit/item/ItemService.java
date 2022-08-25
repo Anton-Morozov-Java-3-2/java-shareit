@@ -9,16 +9,16 @@ import java.util.List;
 
 public interface ItemService {
 
-    Item create(Long idOwner, Item item) throws UserNotFoundException;
+    Item create(Long ownerId, Item item) throws UserNotFoundException;
 
-    Item read(Long id) throws ItemNotFoundException;
+    Item findItemById(Long id) throws ItemNotFoundException;
 
-    List<Item> readAllItemsOwner(Long idOwner) throws UserNotFoundException;
+    List<Item> readAllItemsOwner(Long ownerId) throws UserNotFoundException;
 
-    Item update(Long idOwner, Long idItem, Item item) throws ItemNotFoundException, UserNotFoundException,
+    Item update(Long ownerId, Long itemId, Item item) throws ItemNotFoundException, UserNotFoundException,
             ItemAccessException;
 
     void delete(Long id) throws ItemNotFoundException;
 
-    List<Item> searchItem(Long idOwner, String text) throws UserNotFoundException;
+    List<Item> searchItem(Long ownerId, String text) throws UserNotFoundException;
 }

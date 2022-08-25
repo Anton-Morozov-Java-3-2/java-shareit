@@ -6,7 +6,7 @@ public class ItemAccessException extends Exception {
         super(message);
     }
 
-    public static String createMessage(Long idUser, Long idItem) {
-        return String.format("The user id = %d cannot access editing the item id=%d .", idUser, idItem);
+    public static String createMessage(Long userId, Long itemId) {
+        return String.format("The user id = %d cannot access editing the item id=%d .", userId, itemId);
     }
 }

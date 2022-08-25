@@ -59,7 +59,7 @@ public class UserDaoLocalStorageImpl implements UserStorage {
     }
 
     @Override
-    public User read(Long id) throws UserNotFoundException {
+    public User findUserById(Long id) throws UserNotFoundException {
         checkUserExists(id);
         return users.get(id);
     }

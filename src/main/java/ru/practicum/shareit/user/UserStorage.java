@@ -9,7 +9,7 @@ public interface UserStorage {
 
     User create(User user) throws EmailAlreadyExistsException;
 
-    User read(Long id) throws UserNotFoundException;
+    User findUserById(Long id) throws UserNotFoundException;
 
 
     List<User> readAll();

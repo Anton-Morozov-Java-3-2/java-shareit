@@ -21,28 +21,28 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
 
     @Override
-    public Item create(Long idOwner, Item item) throws UserNotFoundException {
-        User owner = userStorage.read(idOwner);
+    public Item create(Long ownerId, Item item) throws UserNotFoundException {
+        User owner = userStorage.findUserById(ownerId);
         item.setOwner(owner);
         return itemStorage.crate(item);
     }
 
     @Override
-    public Item read(Long id) throws ItemNotFoundException {
+    public Item findItemById(Long id) throws ItemNotFoundException {
         return itemStorage.read(id);
     }
 
     @Override
-    public List<Item> readAllItemsOwner(Long idOwner) throws UserNotFoundException {
-        userStorage.checkUserExists(idOwner);
-        return itemStorage.readAllItemsOwner(idOwner);
+    public List<Item> readAllItemsOwner(Long ownerId) throws UserNotFoundException {
+        userStorage.checkUserExists(ownerId);
+        return itemStorage.readAllItemsOwner(ownerId);
     }
 
     @Override
-    public Item update(Long idOwner, Long idItem, Item item) throws ItemNotFoundException, UserNotFoundException, ItemAccessException {
-        User owner = userStorage.read(idOwner);
+    public Item update(Long ownerId, Long itemId, Item item) throws ItemNotFoundException, UserNotFoundException, ItemAccessException {
+        User owner = userStorage.findUserById(ownerId);
         item.setOwner(owner);
-        return itemStorage.update(idItem, item);
+        return itemStorage.update(itemId, item);
     }
 
     @Override
@@ -51,8 +51,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> searchItem(Long idOwner, String text) throws UserNotFoundException {
-        userStorage.checkUserExists(idOwner);
+    public List<Item> searchItem(Long ownerId, String text) throws UserNotFoundException {
+        userStorage.checkUserExists(ownerId);
         return itemStorage.searchItem(text);
     }
 }

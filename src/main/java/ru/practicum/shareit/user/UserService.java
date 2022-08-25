@@ -18,7 +18,7 @@ public class UserService {
     }
 
     public User get(Long id) throws UserNotFoundException {
-        return userStorage.read(id);
+        return userStorage.findUserById(id);
     }
 
     public User create(User user) throws EmailAlreadyExistsException {
