@@ -5,10 +5,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.EmailAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
-import ru.practicum.shareit.mapper.DtoMapper;
-import ru.practicum.shareit.user.dto.ValidateOnCreateUser;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.ValidateOnUpdateUser;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,18 +20,18 @@ public class UserController {
 
     @GetMapping
     public List<UserDto> getAllUsers() {
-        return  userService.getAllUsers().stream().map(DtoMapper::toUserDto).collect(Collectors.toList());
+        return  userService.getAllUsers().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public UserDto get(@PathVariable("id") Long id) throws UserNotFoundException {
-        return  DtoMapper.toUserDto(userService.get(id));
+        return  UserMapper.toUserDto(userService.get(id));
     }
 
     @PostMapping
     @Validated(ValidateOnCreateUser.class)
     public UserDto create(@Valid @RequestBody UserDto userDto) throws EmailAlreadyExistsException {
-        return DtoMapper.toUserDto(userService.create(DtoMapper.toUser(userDto)));
+        return UserMapper.toUserDto(userService.create(UserMapper.toUser(userDto)));
     }
 
     @PatchMapping("/{id}")
@@ -43,7 +39,7 @@ public class UserController {
     public UserDto update(@PathVariable("id") Long id, @Valid @RequestBody UserDto userDto) throws
             EmailAlreadyExistsException,
             UserNotFoundException {
-        return DtoMapper.toUserDto(userService.update(id, DtoMapper.toUser(userDto)));
+        return UserMapper.toUserDto(userService.update(id, UserMapper.toUser(userDto)));
     }
 
     @DeleteMapping("/{id}")
