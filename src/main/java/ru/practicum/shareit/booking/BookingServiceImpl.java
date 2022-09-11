@@ -10,11 +10,8 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +27,10 @@ public class BookingServiceImpl implements  BookingService {
     public Booking create(Long bookerId, Booking booking) throws ItemNotFoundException, UserNotFoundException,
             BookingDateNotValidException, ItemNotAvailableException, BookingAccessException {
 
-        Item item = itemRepository.findById(booking.getItem().getId()).orElseThrow(()->
+        Item item = itemRepository.findById(booking.getItem().getId()).orElseThrow(() ->
                 new ItemNotFoundException(ItemNotFoundException.createMessage(booking.getItem().getId())));
 
-        User booker = userRepository.findById(bookerId).orElseThrow(()->
+        User booker = userRepository.findById(bookerId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(bookerId)));
 
         if (item.getOwner().getId().equals(bookerId))
@@ -43,8 +40,8 @@ public class BookingServiceImpl implements  BookingService {
         booking.setBooker(booker);
 
         if (booking.getStart().isAfter(booking.getEnd()))
-            throw new BookingDateNotValidException(BookingDateNotValidException.
-                    createMessage(booking.getStart(), booking.getEnd()));
+            throw new BookingDateNotValidException(BookingDateNotValidException
+                    .createMessage(booking.getStart(), booking.getEnd()));
 
         if (item.getIsAvailable()) {
             booking.setStatus(BookingStatus.WAITING);
@@ -61,7 +58,7 @@ public class BookingServiceImpl implements  BookingService {
         User owner = userRepository.findById(ownerId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(ownerId)));
 
-        Booking bookingDb = bookingRepository.findById(bookingId).orElseThrow(()->
+        Booking bookingDb = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new BookingNotFoundException(BookingNotFoundException.createMessage(bookingId)));
 
         Item item = bookingDb.getItem();
@@ -90,7 +87,7 @@ public class BookingServiceImpl implements  BookingService {
             BookingAccessException {
         User requester = userRepository.findById(requesterId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(requesterId)));
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(()->
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new BookingNotFoundException(BookingNotFoundException.createMessage(bookingId)));
 
         if (requester.getId().equals(booking.getItem().getOwner().getId()) ||
@@ -141,7 +138,7 @@ public class BookingServiceImpl implements  BookingService {
                 new UserNotFoundException(UserNotFoundException.createMessage(userId)));
 
         itemRepository.findFirstByOwnerId(userId)
-                .orElseThrow(()-> new UserNotFoundException(UserNotFoundException.createMessage(userId)));
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.createMessage(userId)));
 
         BookingState choice = BookingState.UNSUPPORTED;
         for (BookingState s : BookingState.values()) {

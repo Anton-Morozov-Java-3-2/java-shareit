@@ -31,9 +31,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Comment postComment(Long userId, Long itemId, Comment comment) throws UserNotFoundException,
             ItemNotFoundException, CommentNotAvailableException {
-        User user = userRepository.findById(userId).orElseThrow(()->
+        User user = userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(userId)));
-        Item item = itemRepository.findById(itemId).orElseThrow(()->
+        Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new ItemNotFoundException(ItemNotFoundException.createMessage(itemId)));
         comment.setItem(item);
         comment.setAuthor(user);
@@ -45,7 +45,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item create(Long ownerId, Item item) throws UserNotFoundException {
-        User owner = userRepository.findById(ownerId).orElseThrow(()->
+        User owner = userRepository.findById(ownerId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(ownerId)));
         item.setOwner(owner);
         return itemRepository.save(item);
@@ -53,10 +53,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item findItemById(Long itemId, Long userId) throws ItemNotFoundException, UserNotFoundException {
-        Item item = itemRepository.findById(itemId).orElseThrow(()->
+        Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new ItemNotFoundException(ItemNotFoundException.createMessage(itemId)));
 
-        userRepository.findById(userId).orElseThrow(()->
+        userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(userId)));
 
         if (item.getOwner().getId().equals(userId)) {
@@ -92,9 +92,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item update(Long ownerId, Long itemId, Item item) throws ItemNotFoundException, UserNotFoundException,
             ItemAccessException {
-        User owner = userRepository.findById(ownerId).orElseThrow(()->
+        User owner = userRepository.findById(ownerId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(ownerId)));
-        Item itemDb = itemRepository.findById(itemId).orElseThrow(()->
+        Item itemDb = itemRepository.findById(itemId).orElseThrow(() ->
                 new ItemNotFoundException(ItemNotFoundException.createMessage(itemId)));
 
         if (itemDb.getOwner().getId().equals(ownerId)) {
@@ -102,8 +102,8 @@ public class ItemServiceImpl implements ItemService {
             item.setOwner(owner);
             if (item.getName() == null) item.setName(itemDb.getName());
             if (item.getDescription() == null) item.setDescription(itemDb.getDescription());
-            if(item.getRequest() == null) item.setRequest(itemDb.getRequest());
-            if(item.getIsAvailable() == null) item.setIsAvailable(itemDb.getIsAvailable());
+            if (item.getRequest() == null) item.setRequest(itemDb.getRequest());
+            if (item.getIsAvailable() == null) item.setIsAvailable(itemDb.getIsAvailable());
 
             return itemRepository.save(item);
 
@@ -118,7 +118,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchItem(Long ownerId, String text) throws UserNotFoundException {
-        userRepository.findById(ownerId).orElseThrow(()->
+        userRepository.findById(ownerId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(ownerId)));
 
         String searchText = text.strip().toLowerCase();

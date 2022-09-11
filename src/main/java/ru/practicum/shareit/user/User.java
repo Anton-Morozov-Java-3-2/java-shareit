@@ -8,18 +8,20 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name="users")
-@Getter @Setter @ToString
+@Table(name = "users")
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="user_name", nullable = false)
+    @Column(name = "user_name", nullable = false)
     private String name;
 
-    @Column(name="email", nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     public User() {

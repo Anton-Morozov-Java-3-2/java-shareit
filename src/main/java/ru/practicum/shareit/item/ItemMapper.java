@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import ru.practicum.shareit.booking.BookingItemInfoDto;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.request.ItemRequest;
 

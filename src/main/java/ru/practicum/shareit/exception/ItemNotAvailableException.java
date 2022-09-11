@@ -1,6 +1,5 @@
 package ru.practicum.shareit.exception;
 
-import java.time.LocalDateTime;
 
 public class ItemNotAvailableException extends Exception {
     public ItemNotAvailableException(String message) {

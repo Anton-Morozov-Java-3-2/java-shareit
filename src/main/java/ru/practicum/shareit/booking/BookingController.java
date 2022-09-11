@@ -32,7 +32,7 @@ public class BookingController {
                                    @PathVariable Long bookingId,
                                    @RequestParam("approved") Boolean approved) throws UserNotFoundException,
             BookingNotFoundException, ItemAccessException, ItemChangeStatusException {
-        return BookingMapper.toBookingInfoDto(bookingService.updateStatus(ownerId, bookingId ,approved));
+        return BookingMapper.toBookingInfoDto(bookingService.updateStatus(ownerId, bookingId, approved));
     }
 
     @GetMapping("/{bookingId}")
@@ -50,6 +50,7 @@ public class BookingController {
                 .map(BookingMapper::toBookingInfoDto)
                 .collect(Collectors.toList());
     }
+
     @GetMapping("/owner")
     public List<BookingInfoDto> getAllBookingOwner(@RequestHeader("X-Sharer-User-Id") Long requesterId,
                                                    @RequestParam(value = "state", defaultValue = "ALL") String state)

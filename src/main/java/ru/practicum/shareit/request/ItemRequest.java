@@ -8,9 +8,12 @@ import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "requests")
-@Getter  @Setter  @ToString
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 public class ItemRequest {
     @Id
@@ -21,7 +24,7 @@ public class ItemRequest {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="requestor_id", nullable = false)
+    @JoinColumn(name = "requestor_id", nullable = false)
     private User requestor;
 
     @Column(name = "created", nullable = false)

@@ -1,13 +1,11 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +18,7 @@ public class UserService {
     }
 
     public User get(Long id) throws UserNotFoundException {
-        return userRepository.findById(id).orElseThrow(()->
+        return userRepository.findById(id).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(id)));
     }
 
@@ -36,7 +34,7 @@ public class UserService {
 
     public User update(Long id, User user) throws UserNotFoundException, EmailAlreadyExistsException {
         try {
-            User userDb = userRepository.findById(id).orElseThrow(()->
+            User userDb = userRepository.findById(id).orElseThrow(() ->
                     new UserNotFoundException(UserNotFoundException.createMessage(id)));
 
             user.setId(id);
