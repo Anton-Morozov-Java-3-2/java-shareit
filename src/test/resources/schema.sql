@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     booker_id BIGINT NOT NULL,
     status VARCHAR(100) NOT NULL,
     CONSTRAINT pk_booking PRIMARY KEY (id),
-    CONSTRAINT fk_item_booking FOREIGN KEY (item_id) REFERENCES items(id),
+    CONSTRAINT fk_item FOREIGN KEY (item_id) REFERENCES items(id),
     CONSTRAINT fk_booker FOREIGN KEY (booker_id) REFERENCES users(id)
 );
 
@@ -48,6 +48,6 @@ CREATE TABLE IF NOT EXISTS comments (
     author_id BIGINT NOT NULL,
     created TIMESTAMP NOT NULL,
     CONSTRAINT pk_comment PRIMARY KEY (id),
-    CONSTRAINT fk_item_comments FOREIGN KEY (item_id) REFERENCES items(id),
+    CONSTRAINT fk_item_comment FOREIGN KEY (item_id) REFERENCES items(id),
     CONSTRAINT fk_author FOREIGN KEY (author_id) REFERENCES users(id)
 );
