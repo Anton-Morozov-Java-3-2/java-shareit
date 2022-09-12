@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.request.ItemRequest;
 
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class ItemMapper {
@@ -29,6 +30,6 @@ public class ItemMapper {
                 itemDto.getDescription(),
                 itemDto.getAvailable(), null, itemDto.getRequestId() == null ? null :
                 new ItemRequest(itemDto.getRequestId(), null, null, null),
-                null, null, null);
+                null, null, new HashSet<>());
     }
 }
