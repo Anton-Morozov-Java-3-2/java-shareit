@@ -15,21 +15,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(Long id, LocalDateTime start, LocalDateTime end);
 
-    @Query("select b from Booking b where (b.booker.id = ?1 AND b.status = ru.practicum.shareit.booking.BookingStatus.WAITING)" +
-            "order by b.start DESC")
-    List<Booking> findByBookerIdAndStatusIsWaitingOrderByStartDesc(Long userId);
+    List<Booking> findByBookerIdAndStatusOrderByStartDesc(Long id, BookingStatus status);
 
-    @Query("select b from Booking b where (b.booker.id = ?1 AND b.status = ru.practicum.shareit.booking.BookingStatus.REJECTED)" +
-            "order by b.start DESC")
-    List<Booking> findByBookerIdAndStatusRejectedOrderByStartBookerDesc(Long id);
-
-    @Query("select b from Booking b where (b.item.owner.id = ?1 AND b.status = ru.practicum.shareit.booking.BookingStatus.WAITING)" +
-            "order by b.start DESC")
-    List<Booking> findByOwnerIdAndStatusIsWaitingOrderByStartDesc(Long userId);
-
-    @Query("select b from Booking b where (b.item.owner.id = ?1 AND b.status = ru.practicum.shareit.booking.BookingStatus.REJECTED)" +
-            "order by b.start DESC")
-    List<Booking> findByOwnerIdAndStatusRejectedOrderByStartDesc(Long id);
+    List<Booking> findByItemOwnerIdAndStatusOrderByStartDesc(Long id, BookingStatus status);
 
     List<Booking> findAllByItemOwnerIdOrderByStartDesc(Long id);
 

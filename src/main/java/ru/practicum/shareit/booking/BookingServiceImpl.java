@@ -123,10 +123,10 @@ public class BookingServiceImpl implements  BookingService {
                         LocalDateTime.now(),
                         LocalDateTime.now());
             case WAITING:
-                return bookingRepository.findByBookerIdAndStatusIsWaitingOrderByStartDesc(userId);
+                return bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
 
             case REJECTED:
-                return bookingRepository.findByBookerIdAndStatusRejectedOrderByStartBookerDesc(userId);
+                return bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
             default:
                 throw new InvalidParamException(InvalidParamException.createMessage(state));
         }
@@ -159,9 +159,9 @@ public class BookingServiceImpl implements  BookingService {
                         LocalDateTime.now(),
                         LocalDateTime.now());
             case WAITING:
-                return bookingRepository.findByOwnerIdAndStatusIsWaitingOrderByStartDesc(userId);
+                return bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
             case REJECTED:
-                return bookingRepository.findByOwnerIdAndStatusRejectedOrderByStartDesc(userId);
+                return bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
             default:
                 throw new InvalidParamException(InvalidParamException.createMessage(state));
         }
