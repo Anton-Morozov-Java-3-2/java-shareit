@@ -11,25 +11,47 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     public List<User> getAllUsers() {
-        return userStorage.readAll();
+        return userRepository.findAll();
     }
 
     public User get(Long id) throws UserNotFoundException {
-        return userStorage.findUserById(id);
+        return userRepository.findById(id).orElseThrow(() ->
+                new UserNotFoundException(UserNotFoundException.createMessage(id)));
     }
 
     public User create(User user) throws EmailAlreadyExistsException {
-        return userStorage.create(user);
+        try {
+            return userRepository.save(user);
+        } catch (Throwable e) {
+            if (e.getMessage().contains("uq_user_email"))
+                throw new EmailAlreadyExistsException(EmailAlreadyExistsException.createMessage(user.getEmail()));
+            else throw e;
+        }
     }
 
     public User update(Long id, User user) throws UserNotFoundException, EmailAlreadyExistsException {
-        return userStorage.update(id, user);
+        try {
+            User userDb = userRepository.findById(id).orElseThrow(() ->
+                    new UserNotFoundException(UserNotFoundException.createMessage(id)));
+
+            user.setId(id);
+            if (user.getEmail() == null) user.setEmail(userDb.getEmail());
+            if (user.getName() == null) user.setName(userDb.getName());
+            return userRepository.save(user);
+
+        } catch (Throwable e) {
+            if (e.getMessage().contains("uq_user_email"))
+                throw new EmailAlreadyExistsException(EmailAlreadyExistsException.createMessage(user.getEmail()));
+            else throw e;
+        }
     }
 
     public void delete(Long id) throws UserNotFoundException {
-        userStorage.delete(id);
+        if (userRepository.existsById(id))
+            userRepository.deleteById(id);
+        else throw new UserNotFoundException(UserNotFoundException.createMessage(id));
     }
 }

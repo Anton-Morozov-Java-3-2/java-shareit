@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.ItemAccessException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.item.model.Item;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
@@ -57,8 +59,8 @@ public class ItemDaoLocalStorageImpl implements ItemStorage {
         checkItemExists(id);
         Item dbItem = items.get(id);
         if (dbItem.getOwner().getId().equals(item.getOwner().getId())) {
-            if (item.getAvailable() != null) {
-                dbItem.setAvailable(item.getAvailable());
+            if (item.getIsAvailable() != null) {
+                dbItem.setIsAvailable(item.getIsAvailable());
             }
 
             if (item.getName() != null) {
@@ -97,7 +99,7 @@ public class ItemDaoLocalStorageImpl implements ItemStorage {
             return items.values().stream()
                     .filter(item -> (item.getDescription().toLowerCase().contains(target)
                             || item.getName().toLowerCase().contains(target))
-                            && item.getAvailable())
+                            && item.getIsAvailable())
                     .collect(Collectors.toList());
         }
     }

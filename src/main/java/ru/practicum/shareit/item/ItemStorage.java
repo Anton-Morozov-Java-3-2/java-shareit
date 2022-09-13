@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.exception.ItemAccessException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
