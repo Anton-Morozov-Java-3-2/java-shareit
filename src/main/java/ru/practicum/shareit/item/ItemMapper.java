@@ -29,7 +29,15 @@ public class ItemMapper {
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(), null, itemDto.getRequestId() == null ? null :
-                new ItemRequest(itemDto.getRequestId(), null, null, null),
+                new ItemRequest(itemDto.getRequestId()),
                 null, null, new HashSet<>());
+    }
+
+    public static ItemInfoDto toItemInfoDto(Item item) {
+        return new ItemInfoDto(item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getIsAvailable(),
+                item.getRequest().getId());
     }
 }

@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.booking.BookingController;
 import ru.practicum.shareit.item.ItemController;
+import ru.practicum.shareit.request.ItemRequestController;
 import ru.practicum.shareit.user.UserController;
 
 import javax.validation.ConstraintViolationException;
 
-@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class})
+@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class,
+        ItemRequestController.class})
 public class ErrorHandler {
 
     private ErrorResponse errorResponse;
@@ -29,7 +31,8 @@ public class ErrorHandler {
             ItemAccessException.class,
             ItemNotFoundException.class,
             BookingAccessException.class,
-            BookingNotFoundException.class})
+            BookingNotFoundException.class,
+            ItemRequestNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final Exception e) {
         return new ErrorResponse(e.getMessage());
@@ -50,7 +53,6 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAllError(final Throwable e) {
-        System.out.println(e.getMessage());
         return new ErrorResponse("Произошла непредвиденная ошибка.");
     }
 

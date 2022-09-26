@@ -35,7 +35,7 @@ public class Item {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "request_id")
     private ItemRequest request;
 
@@ -48,4 +48,9 @@ public class Item {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "item_id")
     private Set<Comment> comments = new HashSet<>();
+
+    public Item(String name) {
+        this.name = name;
+    }
+
 }

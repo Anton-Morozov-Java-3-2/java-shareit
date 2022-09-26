@@ -5,7 +5,11 @@ import ru.practicum.shareit.item.ItemInfoDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserInfoDto;
 
+import java.time.format.DateTimeFormatter;
+
 public class BookingMapper {
+
+    public static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     public static BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
@@ -29,14 +33,15 @@ public class BookingMapper {
     }
 
     public static BookingInfoDto toBookingInfoDto(Booking booking) {
-        return new BookingInfoDto(booking.getId(), booking.getStart(), booking.getEnd(),
+        return new BookingInfoDto(booking.getId(), booking.getStart().format(format), booking.getEnd().format(format),
                 booking.getStatus(),
                 new UserInfoDto(booking.getBooker().getId()),
-                new ItemInfoDto(booking.getItem().getId(), booking.getItem().getName()));
+                new ItemInfoDto(booking.getItem().getId(), booking.getItem().getName(),
+                        null, null, null));
     }
 
     public static BookingItemInfoDto toBookingItemInfoDto(Booking booking) {
         return new BookingItemInfoDto(booking.getId(), booking.getBooker().getId(),
-                booking.getStart(), booking.getEnd());
+                booking.getStart().format(format), booking.getEnd().format(format));
     }
 }

@@ -1,10 +1,13 @@
 package ru.practicum.shareit.request;
 
 import lombok.*;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "requests")
@@ -27,4 +30,15 @@ public class ItemRequest {
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "request_id")
+    private Set<Item> items = new HashSet<>();
+
+    public ItemRequest(Long id) {
+        this.setId(id);
+    }
 }
+
+
+

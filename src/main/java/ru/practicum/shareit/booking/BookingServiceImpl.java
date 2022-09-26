@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.Item;
@@ -73,8 +74,6 @@ public class BookingServiceImpl implements  BookingService {
                 throw new ItemChangeStatusException(ItemChangeStatusException.createMessage(item.getId(),
                         BookingStatus.REJECTED.toString()));
 
-
-
             bookingDb.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
             return bookingRepository.save(bookingDb);
         } else {
@@ -99,69 +98,70 @@ public class BookingServiceImpl implements  BookingService {
     }
 
     @Override
-    public List<Booking> getAllBookingsUser(Long userId, String state) throws UserNotFoundException, InvalidParamException {
+    public List<Booking> getAllBookingsUser(Long userId, String state, Integer from, Integer size)
+            throws UserNotFoundException, InvalidParamException {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(userId)));
 
-        BookingState choice = BookingState.UNSUPPORTED;
-        for (BookingState s : BookingState.values()) {
-            if (state.equals(s.toString())) {
-                choice = s;
-                break;
-            }
-        }
+        BookingState choice = BookingState.getBookingState(state);
+        PageRequest pageRequest = PageRequest.of(from == null ? 0 : from / size, size == null ? Integer.MAX_VALUE : size);
 
         switch (choice) {
             case ALL:
-                return bookingRepository.findAllByBooker_IdOrderByStartDesc(userId);
+                return bookingRepository.findAllByBooker_IdOrderByStartDesc(userId, pageRequest);
             case FUTURE:
-                return bookingRepository.findAllByBooker_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                return bookingRepository.findAllByBooker_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now(),
+                        pageRequest);
             case PAST:
-                return bookingRepository.findAllByBooker_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                return bookingRepository.findAllByBooker_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(),
+                        pageRequest);
             case CURRENT:
                 return bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
                         LocalDateTime.now(),
-                        LocalDateTime.now());
+                        LocalDateTime.now(), pageRequest);
             case WAITING:
-                return bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+                return bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING,
+                        pageRequest);
 
             case REJECTED:
-                return bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
+                return bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED,
+                        pageRequest);
             default:
                 throw new InvalidParamException(InvalidParamException.createMessage(state));
         }
     }
 
     @Override
-    public List<Booking> getAllBookingsOwner(Long userId, String state) throws UserNotFoundException, InvalidParamException {
+    public List<Booking> getAllBookingsOwner(Long userId, String state, Integer from, Integer size)
+            throws UserNotFoundException, InvalidParamException {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(userId)));
 
         itemRepository.findFirstByOwnerId(userId)
                 .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.createMessage(userId)));
 
-        BookingState choice = BookingState.UNSUPPORTED;
-        for (BookingState s : BookingState.values()) {
-            if (state.equals(s.toString())) {
-                choice = s;
-                break;
-            }
-        }
+        BookingState choice = BookingState.getBookingState(state);
+        PageRequest pageRequest = PageRequest.of(from == null ? 0 : from / size, size == null ? Integer.MAX_VALUE : size);
+
         switch (choice) {
             case ALL:
-                return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
+                return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageRequest);
             case FUTURE:
-                return bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                return bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now(),
+                        pageRequest);
             case PAST:
-                return bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                return bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(),
+                        pageRequest);
             case CURRENT:
                 return bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
                         LocalDateTime.now(),
-                        LocalDateTime.now());
+                        LocalDateTime.now(), pageRequest);
             case WAITING:
-                return bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+                return bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING,
+                        pageRequest);
             case REJECTED:
-                return bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
+                return bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED,
+                        pageRequest);
             default:
                 throw new InvalidParamException(InvalidParamException.createMessage(state));
         }

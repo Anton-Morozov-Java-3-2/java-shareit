@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Validated
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @GetMapping
     public List<UserDto> getAllUsers() {

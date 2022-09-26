@@ -16,7 +16,7 @@ public interface BookingService {
     Booking getBookingById(Long requesterId, Long bookingId) throws UserNotFoundException,
             BookingNotFoundException, BookingAccessException;
 
-    List<Booking> getAllBookingsUser(Long userId, String state) throws UserNotFoundException, InvalidParamException;
+    List<Booking> getAllBookingsUser(Long userId, String state, Integer from, Integer size) throws UserNotFoundException, InvalidParamException;
 
-    List<Booking> getAllBookingsOwner(Long userId, String state) throws UserNotFoundException, InvalidParamException;
+    List<Booking> getAllBookingsOwner(Long userId, String state, Integer from, Integer size) throws UserNotFoundException, InvalidParamException;
 }
