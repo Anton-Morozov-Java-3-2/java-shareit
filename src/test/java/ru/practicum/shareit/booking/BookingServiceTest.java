@@ -303,7 +303,7 @@ public class BookingServiceTest {
         Mockito.when(userRepository.findById(Mockito.any(Long.class)))
                 .thenReturn(Optional.ofNullable(mockUser));
 
-        Mockito.when(bookingRepository.findAllByBooker_IdOrderByStartDesc(Mockito.any(Long.class),
+        Mockito.when(bookingRepository.findAllByBookerIdOrderByStartDesc(Mockito.any(Long.class),
                         Mockito.any(PageRequest.class)))
                 .thenReturn(List.of(mockBooking));
 
@@ -311,10 +311,10 @@ public class BookingServiceTest {
                 bookingService.getAllBookingsUser(1L, BookingState.ALL.toString(), 0, 2));
 
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByBooker_IdOrderByStartDesc(Mockito.any(Long.class), Mockito.any(PageRequest.class));
+                .findAllByBookerIdOrderByStartDesc(Mockito.any(Long.class), Mockito.any(PageRequest.class));
 
 
-        Mockito.when(bookingRepository.findAllByBooker_IdAndStartAfterOrderByStartDesc(Mockito.any(Long.class),
+        Mockito.when(bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(Mockito.any(Long.class),
                         Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class)))
                 .thenReturn(List.of(mockBooking));
 
@@ -322,10 +322,10 @@ public class BookingServiceTest {
                 bookingService.getAllBookingsUser(1L, BookingState.FUTURE.toString(), 0, 2));
 
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByBooker_IdAndStartAfterOrderByStartDesc(Mockito.any(Long.class),
+                .findAllByBookerIdAndStartAfterOrderByStartDesc(Mockito.any(Long.class),
                         Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class));
 
-        Mockito.when(bookingRepository.findAllByBooker_IdAndEndBeforeOrderByStartDesc(Mockito.any(Long.class),
+        Mockito.when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(Mockito.any(Long.class),
                         Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class)))
                 .thenReturn(List.of(mockBooking));
 
@@ -333,10 +333,10 @@ public class BookingServiceTest {
                 bookingService.getAllBookingsUser(1L, BookingState.PAST.toString(), 0, 2));
 
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByBooker_IdAndEndBeforeOrderByStartDesc(Mockito.any(Long.class),
+                .findAllByBookerIdAndEndBeforeOrderByStartDesc(Mockito.any(Long.class),
                         Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class));
 
-        Mockito.when(bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(
+        Mockito.when(bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
                         Mockito.any(Long.class), Mockito.any(LocalDateTime.class),
                         Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class)))
                 .thenReturn(List.of(mockBooking));
@@ -345,7 +345,7 @@ public class BookingServiceTest {
                 bookingService.getAllBookingsUser(1L, BookingState.CURRENT.toString(), 0, 2));
 
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(Mockito.any(Long.class), Mockito.any(LocalDateTime.class),
+                .findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Mockito.any(Long.class), Mockito.any(LocalDateTime.class),
                         Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class));
 
         Mockito.when(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(Mockito.any(Long.class),

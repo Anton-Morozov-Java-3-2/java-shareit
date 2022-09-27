@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.*;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingServiceImpl implements  BookingService {
 
     private final BookingRepository bookingRepository;
@@ -46,6 +48,7 @@ public class BookingServiceImpl implements  BookingService {
 
         if (item.getIsAvailable()) {
             booking.setStatus(BookingStatus.WAITING);
+            log.info("User id= " + bookerId + " create " + booking);
             return bookingRepository.save(booking);
         } else {
             throw new ItemNotAvailableException(ItemNotAvailableException.createMessage(item.getId()));
@@ -75,6 +78,7 @@ public class BookingServiceImpl implements  BookingService {
                         BookingStatus.REJECTED.toString()));
 
             bookingDb.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
+            log.info("Owner id= " + ownerId + " update booking id= " + bookingId + " status= " + approved);
             return bookingRepository.save(bookingDb);
         } else {
             throw new ItemAccessException(ItemAccessException.createMessage(ownerId, item.getId()));
@@ -91,6 +95,7 @@ public class BookingServiceImpl implements  BookingService {
 
         if (requester.getId().equals(booking.getItem().getOwner().getId()) ||
                 requester.getId().equals(booking.getBooker().getId())) {
+            log.info("User id= " + requesterId + " get booking id= " + bookingId);
             return booking;
         } else {
             throw new BookingAccessException(BookingAccessException.createMessage(requesterId, bookingId));
@@ -106,17 +111,19 @@ public class BookingServiceImpl implements  BookingService {
         BookingState choice = BookingState.getBookingState(state);
         PageRequest pageRequest = PageRequest.of(from == null ? 0 : from / size, size == null ? Integer.MAX_VALUE : size);
 
+        log.info("User id= " + userId + " find all bookings by bookerId and state= " + state);
+
         switch (choice) {
             case ALL:
-                return bookingRepository.findAllByBooker_IdOrderByStartDesc(userId, pageRequest);
+                return bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageRequest);
             case FUTURE:
-                return bookingRepository.findAllByBooker_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now(),
+                return bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now(),
                         pageRequest);
             case PAST:
-                return bookingRepository.findAllByBooker_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(),
+                return bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(),
                         pageRequest);
             case CURRENT:
-                return bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                return bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
                         LocalDateTime.now(),
                         LocalDateTime.now(), pageRequest);
             case WAITING:
@@ -142,6 +149,8 @@ public class BookingServiceImpl implements  BookingService {
 
         BookingState choice = BookingState.getBookingState(state);
         PageRequest pageRequest = PageRequest.of(from == null ? 0 : from / size, size == null ? Integer.MAX_VALUE : size);
+
+        log.info("Owner id= " + userId + " find all his bookings by state= " + state);
 
         switch (choice) {
             case ALL:

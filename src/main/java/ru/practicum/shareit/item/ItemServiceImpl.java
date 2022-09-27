@@ -44,6 +44,7 @@ public class ItemServiceImpl implements ItemService {
         if (bookingRepository.findAllByBookerIdAndItemId(userId, itemId, LocalDateTime.now(),
                 PageRequest.of(0, Integer.MAX_VALUE)).isEmpty())
             throw new CommentNotAvailableException(CommentNotAvailableException.createMessage(itemId));
+        log.info("User id= " + userId + " create " + comment + " for item id= " + item);
         return commentRepository.save(comment);
     }
 
@@ -58,6 +59,7 @@ public class ItemServiceImpl implements ItemService {
                             .createMessage(item.getRequest().getId())));
             item.setRequest(itemRequest);
         }
+        log.info("User id= " + owner + " create " + item);
         return itemRepository.save(item);
     }
 
@@ -69,6 +71,7 @@ public class ItemServiceImpl implements ItemService {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(userId)));
 
+        log.info("User id= " + userId + " find item by id= " + itemId);
         if (item.getOwner().getId().equals(userId)) {
 
             List<Booking> nextBookingList = bookingRepository
@@ -94,6 +97,7 @@ public class ItemServiceImpl implements ItemService {
 
             items = itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId, pageRequest);
 
+            log.info("Owner id= " + ownerId + " find all his items by");
             for (Item item : items) {
                 List<Booking> nextBookingList = bookingRepository
                         .findAllByItemIdAndStartAfterOrderByStartDesc(item.getId(), LocalDateTime.now(),
@@ -125,6 +129,7 @@ public class ItemServiceImpl implements ItemService {
             if (item.getRequest() == null) item.setRequest(itemDb.getRequest());
             if (item.getIsAvailable() == null) item.setIsAvailable(itemDb.getIsAvailable());
 
+            log.info("Owner id= " + ownerId + " update item id= " + itemId + " " + item);
             return itemRepository.save(item);
 
         } else throw new ItemAccessException(ItemAccessException.createMessage(ownerId, itemId));
@@ -132,6 +137,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void delete(Long id) throws ItemNotFoundException {
+        log.info("Delete item id= " + id);
         if (itemRepository.existsById(id)) itemRepository.deleteById(id);
         else throw new ItemNotFoundException(ItemNotFoundException.createMessage(id));
     }
@@ -146,6 +152,8 @@ public class ItemServiceImpl implements ItemService {
 
         PageRequest pageRequest = PageRequest.of(from == null ? 0 : from / size,
                 size == null ? Integer.MAX_VALUE : size);
+
+        log.info("User id= " + ownerId + " search items by text= " + text);
         return itemRepository.search(searchText, pageRequest);
     }
 }

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemRequestServiceImpl implements ItemRequestService {
 
     private final ItemRequestRepository  itemRequestRepository;
@@ -30,6 +32,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         itemRequest.setRequestor(requestor);
 
         itemRequest.setCreated(LocalDateTime.now().withNano(0));
+        log.info("Create " + itemRequest);
         return  ItemRequestMapper.itemRequestDto(itemRequestRepository.save(itemRequest));
     }
 
@@ -37,7 +40,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> findAllByRequestorId(Long requestorId) throws UserNotFoundException {
         userRepository.findById(requestorId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(requestorId)));
-
+            log.info("Find all ItemRequests by requestor id= " + requestorId);
             return itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(requestorId).stream()
                     .map(ItemRequestMapper::itemRequestDto).collect(Collectors.toList());
     }
@@ -51,6 +54,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         PageRequest pageRequest = PageRequest.of(from == null ? 0 : from / size, size == null ? Integer.MAX_VALUE : size,
                 Sort.by("created").descending());
 
+        log.info("Find all ItemRequests");
         return itemRequestRepository.findAllByRequestorIdNot(requestorId, pageRequest)
                 .stream().map(ItemRequestMapper::itemRequestDto).collect(Collectors.toList());
     }
@@ -61,6 +65,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(userId)));
 
+        log.info("User id= " + userId +  " find ItemRequests id=" + requestId);
         return ItemRequestMapper
                 .itemRequestDto(itemRequestRepository.findById(requestId).orElseThrow(() ->
                         new ItemRequestNotFoundException((ItemNotFoundException.createMessage(requestId)))));

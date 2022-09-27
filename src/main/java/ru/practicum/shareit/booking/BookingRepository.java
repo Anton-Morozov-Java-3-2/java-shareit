@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findAllByBooker_IdOrderByStartDesc(Long id, Pageable pageable);
+    List<Booking> findAllByBookerIdOrderByStartDesc(Long id, Pageable pageable);
 
-    List<Booking> findAllByBooker_IdAndStartAfterOrderByStartDesc(Long id, LocalDateTime start, Pageable pageable);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Long id, LocalDateTime start, Pageable pageable);
 
-    List<Booking> findAllByBooker_IdAndEndBeforeOrderByStartDesc(Long id, LocalDateTime end, Pageable pageable);
+    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Long id, LocalDateTime end, Pageable pageable);
 
-    List<Booking> findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(Long id, LocalDateTime start,
-                                                                              LocalDateTime end, Pageable pageable);
+    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long id, LocalDateTime start,
+                                                                             LocalDateTime end, Pageable pageable);
 
     List<Booking> findByBookerIdAndStatusOrderByStartDesc(Long id, BookingStatus status, Pageable pageable);
 
