@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -17,9 +18,11 @@ public class BookingDto {
     private Long bookerId;
     @NotNull(groups = ValidateOnCreateBooking.class)
     @FutureOrPresent(groups = ValidateOnCreateBooking.class)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime start;
     @Future(groups = ValidateOnCreateBooking.class)
     @NotNull(groups = ValidateOnCreateBooking.class)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime end;
     private BookingStatus status;
 }

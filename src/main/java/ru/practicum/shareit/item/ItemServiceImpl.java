@@ -2,13 +2,13 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.exception.CommentNotAvailableException;
-import ru.practicum.shareit.exception.ItemAccessException;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.*;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -28,6 +28,8 @@ public class ItemServiceImpl implements ItemService {
 
     private final CommentRepository commentRepository;
 
+    private final ItemRequestRepository itemRequestRepository;
+
     @Override
     public Comment postComment(Long userId, Long itemId, Comment comment) throws UserNotFoundException,
             ItemNotFoundException, CommentNotAvailableException {
@@ -35,19 +37,29 @@ public class ItemServiceImpl implements ItemService {
                 new UserNotFoundException(UserNotFoundException.createMessage(userId)));
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new ItemNotFoundException(ItemNotFoundException.createMessage(itemId)));
+
         comment.setItem(item);
         comment.setAuthor(user);
 
-        if (bookingRepository.findAllByBookerIdAndItemId(userId, itemId, LocalDateTime.now()).isEmpty())
+        if (bookingRepository.findAllByBookerIdAndItemId(userId, itemId, LocalDateTime.now(),
+                PageRequest.of(0, Integer.MAX_VALUE)).isEmpty())
             throw new CommentNotAvailableException(CommentNotAvailableException.createMessage(itemId));
+        log.info("User id= " + userId + " create " + comment + " for item id= " + item);
         return commentRepository.save(comment);
     }
 
     @Override
-    public Item create(Long ownerId, Item item) throws UserNotFoundException {
+    public Item create(Long ownerId, Item item) throws UserNotFoundException, ItemRequestNotFoundException {
         User owner = userRepository.findById(ownerId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(ownerId)));
         item.setOwner(owner);
+        if (item.getRequest() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(item.getRequest().getId()).orElseThrow(() ->
+                    new ItemRequestNotFoundException(ItemRequestNotFoundException
+                            .createMessage(item.getRequest().getId())));
+            item.setRequest(itemRequest);
+        }
+        log.info("User id= " + owner + " create " + item);
         return itemRepository.save(item);
     }
 
@@ -59,30 +71,42 @@ public class ItemServiceImpl implements ItemService {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(userId)));
 
+        log.info("User id= " + userId + " find item by id= " + itemId);
         if (item.getOwner().getId().equals(userId)) {
 
             List<Booking> nextBookingList = bookingRepository
-                    .findAllByItemIdAndStartAfterOrderByStartDesc(itemId, LocalDateTime.now());
+                    .findAllByItemIdAndStartAfterOrderByStartDesc(itemId, LocalDateTime.now(),
+                            PageRequest.of(0, Integer.MAX_VALUE));
             item.setNextBooking(nextBookingList.isEmpty() ? null : nextBookingList.get(0));
 
             List<Booking> lastBookingList = bookingRepository
-                    .findAllByItemIdAndStartBeforeOrderByStartAsc(itemId, LocalDateTime.now());
+                    .findAllByItemIdAndStartBeforeOrderByStartAsc(itemId, LocalDateTime.now(),
+                            PageRequest.of(0, Integer.MAX_VALUE));
             item.setLastBooking(lastBookingList.isEmpty() ? null : lastBookingList.get(0));
         }
         return item;
     }
 
     @Override
-    public List<Item> readAllItemsOwner(Long ownerId) throws UserNotFoundException {
+    public List<Item> readAllItemsOwner(Long ownerId, Integer from, Integer size) throws UserNotFoundException {
         if (userRepository.existsById(ownerId)) {
-            List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId);
+            List<Item> items;
+
+            PageRequest pageRequest = PageRequest.of(from == null ? 0 : from / size,
+                    size == null ? Integer.MAX_VALUE : size);
+
+            items = itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId, pageRequest);
+
+            log.info("Owner id= " + ownerId + " find all his items by");
             for (Item item : items) {
                 List<Booking> nextBookingList = bookingRepository
-                        .findAllByItemIdAndStartAfterOrderByStartDesc(item.getId(), LocalDateTime.now());
+                        .findAllByItemIdAndStartAfterOrderByStartDesc(item.getId(), LocalDateTime.now(),
+                                PageRequest.of(0, Integer.MAX_VALUE));
                 item.setNextBooking(nextBookingList.isEmpty() ? null : nextBookingList.get(0));
 
                 List<Booking> lastBookingList = bookingRepository
-                        .findAllByItemIdAndStartBeforeOrderByStartAsc(item.getId(), LocalDateTime.now());
+                        .findAllByItemIdAndStartBeforeOrderByStartAsc(item.getId(), LocalDateTime.now(),
+                                PageRequest.of(0, Integer.MAX_VALUE));
                 item.setLastBooking(lastBookingList.isEmpty() ? null : lastBookingList.get(0));
             }
             return items;
@@ -105,6 +129,7 @@ public class ItemServiceImpl implements ItemService {
             if (item.getRequest() == null) item.setRequest(itemDb.getRequest());
             if (item.getIsAvailable() == null) item.setIsAvailable(itemDb.getIsAvailable());
 
+            log.info("Owner id= " + ownerId + " update item id= " + itemId + " " + item);
             return itemRepository.save(item);
 
         } else throw new ItemAccessException(ItemAccessException.createMessage(ownerId, itemId));
@@ -112,17 +137,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void delete(Long id) throws ItemNotFoundException {
+        log.info("Delete item id= " + id);
         if (itemRepository.existsById(id)) itemRepository.deleteById(id);
         else throw new ItemNotFoundException(ItemNotFoundException.createMessage(id));
     }
 
     @Override
-    public List<Item> searchItem(Long ownerId, String text) throws UserNotFoundException {
+    public List<Item> searchItem(Long ownerId, String text, Integer from, Integer size) throws UserNotFoundException {
         userRepository.findById(ownerId).orElseThrow(() ->
                 new UserNotFoundException(UserNotFoundException.createMessage(ownerId)));
 
         String searchText = text.strip().toLowerCase();
         if (searchText.isBlank()) return Collections.emptyList();
-        else return itemRepository.search(searchText);
+
+        PageRequest pageRequest = PageRequest.of(from == null ? 0 : from / size,
+                size == null ? Integer.MAX_VALUE : size);
+
+        log.info("User id= " + ownerId + " search items by text= " + text);
+        return itemRepository.search(searchText, pageRequest);
     }
 }

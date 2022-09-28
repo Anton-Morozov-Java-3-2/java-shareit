@@ -7,6 +7,7 @@ import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.ValidateOnUpdateItem;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,9 +44,12 @@ public class BookingController {
 
     @GetMapping
     public List<BookingInfoDto> getAllBookingUser(@RequestHeader("X-Sharer-User-Id") Long requesterId,
-                                                  @RequestParam(value = "state", defaultValue = "ALL") String state)
+                                                  @RequestParam(value = "state", defaultValue = "ALL") String state,
+                                                  @RequestParam(value = "from", required = false) @Min(0) Integer from,
+                                                  @RequestParam(value = "size", required = false) @Min(1) Integer size)
+
             throws UserNotFoundException, InvalidParamException {
-        return bookingService.getAllBookingsUser(requesterId, state)
+        return bookingService.getAllBookingsUser(requesterId, state, from, size)
                 .stream()
                 .map(BookingMapper::toBookingInfoDto)
                 .collect(Collectors.toList());
@@ -53,9 +57,11 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingInfoDto> getAllBookingOwner(@RequestHeader("X-Sharer-User-Id") Long requesterId,
-                                                   @RequestParam(value = "state", defaultValue = "ALL") String state)
+                                                  @RequestParam(value = "state", defaultValue = "ALL") String state,
+                                                  @RequestParam(value = "from", required = false) @Min(0) Integer from,
+                                                  @RequestParam(value = "size", required = false) @Min(1) Integer size)
             throws UserNotFoundException, InvalidParamException {
-        return bookingService.getAllBookingsOwner(requesterId, state)
+        return bookingService.getAllBookingsOwner(requesterId, state, from, size)
                 .stream()
                 .map(BookingMapper::toBookingInfoDto)
                 .collect(Collectors.toList());
