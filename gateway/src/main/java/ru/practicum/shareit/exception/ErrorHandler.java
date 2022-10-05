@@ -13,18 +13,6 @@ public class ErrorHandler {
 
     private ErrorResponse errorResponse;
 
-//    @ExceptionHandler()
-//    @ResponseStatus(HttpStatus.CONFLICT)
-//    public ErrorResponse handleConflictRequest(final Exception e) {
-//        return new ErrorResponse("Ошибка в данных: " + e.getMessage());
-//    }
-//
-//    @ExceptionHandler()
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public ErrorResponse handleNotFound(final Exception e) {
-//        return new ErrorResponse(e.getMessage());
-//    }
-
     @ExceptionHandler({MethodArgumentNotValidException.class,
             ConstraintViolationException.class,
             IllegalArgumentException.class})
